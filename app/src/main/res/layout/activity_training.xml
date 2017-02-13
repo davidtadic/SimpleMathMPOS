@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_training"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/practise_background"
+    tools:context="com.example.david.simplemath.activities.main.TrainingActivity">
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/practise_knowledge"
+    android:layout_marginTop="30dp"
+    android:layout_marginStart="20dp"
+    />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/back"
+        android:id="@+id/back_settings"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/roman_practise"
+        android:id="@+id/roman_numerals_practise"
+        android:background="@android:color/transparent"
+        android:layout_marginEnd="20dp"
+        />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/plus_minus"
+            android:id="@+id/plus_minus_practise"
+            android:background="@android:color/transparent"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/array_practise"
+            android:id="@+id/array_practise"
+            android:background="@android:color/transparent"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/less_greater_equal"
+            android:id="@+id/less_greater_practise"
+            android:background="@android:color/transparent"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/geometry_practise"
+            android:id="@+id/geometry_practise"
+            android:background="@android:color/transparent"
+            />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

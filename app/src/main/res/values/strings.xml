@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SimpleMath</string>
+    <string name="exit_game">Exit</string>
+    <string name="highscores">Highscores</string>
+    <string name="practise_your_knowledge">Practise Your Knowledge</string>
+    <string name="are_you_sure_you_want_to_quit_practise">Are you sure you want to quit Practise?</string>
+    <string name="are_you_sure_you_want_to_exit">Are you sure you want to Exit?</string>
 </resources>
