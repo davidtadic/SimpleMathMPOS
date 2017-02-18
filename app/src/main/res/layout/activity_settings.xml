@@ -31,30 +31,27 @@
         android:id="@+id/linearLayout"
         android:layout_above="@+id/back_settings"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="44dp">
+        android:layout_marginBottom="60dp">
 
         <ToggleButton
             android:id="@+id/toggleMusic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/check_music"
-        android:layout_margin="50dp"
+            android:background="@drawable/music_on"
         android:textOn=""
         android:textOff=""
         android:focusable="false"
         android:focusableInTouchMode="false"
+            android:layout_marginEnd="40dp"
             />
 
-        <ToggleButton
-            android:id="@+id/toggleVoice"
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/check_voice"
-            android:layout_margin="50dp"
-            android:textOn=""
-            android:textOff=""
-            android:focusable="false"
-            android:focusableInTouchMode="false"
+            android:src="@drawable/about_us"
+            android:id="@+id/aboutUs"
+            android:layout_marginStart="40dp"
+            android:background="@android:color/transparent"
             />
 
 

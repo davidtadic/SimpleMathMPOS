@@ -6,9 +6,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.SQLException;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,7 @@ import com.example.david.simplemath.activities.main.MainActivity;
 import com.example.david.simplemath.activities.main.TrainingActivity;
 import com.example.david.simplemath.database.DatabaseHelper;
 import com.example.david.simplemath.models.RomanArabianModel;
+import com.example.david.simplemath.services.BackgroundMusicService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +57,10 @@ public class PractiseRomanActivity extends Activity {
 
     public boolean correct = false;
 
+    private SharedPreferences sharedPreferences = null;
+    private String musicControl;
+    private Intent intentMusic;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,35 +74,14 @@ public class PractiseRomanActivity extends Activity {
         answer3Button = (Button)findViewById(R.id.answer3_roman);
         answer4Button = (Button)findViewById(R.id.answer4_roman);
 
+        sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
+        musicControl = sharedPreferences.getString("musicControl", "");
+
 
         backRoman.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.dialog_back);
-
-                ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
-                ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
-
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(PractiseRomanActivity.this, TrainingActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                });
-
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
-
-
+            dialogBack();
             }
         });
 
@@ -122,6 +108,32 @@ public class PractiseRomanActivity extends Activity {
         counter = 0;
         changeQuestion(counter);
 
+    }
+
+    public void dialogBack(){
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_back);
+
+        ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
+        ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(PractiseRomanActivity.this, TrainingActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     public void changeQuestion(int counter){
@@ -295,14 +307,33 @@ public class PractiseRomanActivity extends Activity {
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_correct);
+        dialog.setCancelable(false);
+
+        if(musicControl.equals("on")){
+            intentMusic = new Intent(PractiseRomanActivity.this, BackgroundMusicService.class);
+            stopService(intentMusic);
+        }
+
+
+        final MediaPlayer player = MediaPlayer.create(this, R.raw.correct);
+        player.setLooping(false);
+        player.setVolume(100, 100);
+        player.start();
 
         ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_correct);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                player.stop();
+                player.release();
+                if(musicControl.equals("on")){
+                    startService(intentMusic);
+                }
                 changeQuestion(counter);
                 dialog.dismiss();
+
             }
         });
 
@@ -313,14 +344,30 @@ public class PractiseRomanActivity extends Activity {
     public void wrongDialog(final int counter){
         setDisabledButtons();
 
+        if(musicControl.equals("on")){
+            intentMusic = new Intent(PractiseRomanActivity.this, BackgroundMusicService.class);
+            stopService(intentMusic);
+        }
+
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_wrong);
+        dialog.setCancelable(false);
+
+        final MediaPlayer player = MediaPlayer.create(this, R.raw.wrong);
+        player.setLooping(false);
+        player.setVolume(100, 100);
+        player.start();
 
         ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_wrong);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                player.stop();
+                player.release();
+                if(musicControl.equals("on")){
+                    startService(intentMusic);
+                }
                 changeQuestion(counter);
                 dialog.dismiss();
             }
@@ -331,9 +378,7 @@ public class PractiseRomanActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(PractiseRomanActivity.this, TrainingActivity.class);
-        startActivity(i);
-        finish();
+        dialogBack();
     }
 
 }

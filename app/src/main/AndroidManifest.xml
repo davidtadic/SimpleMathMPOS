@@ -47,8 +47,14 @@
         <activity
             android:name=".activities.practise.PractiseGeometryActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".activities.practise.PractiseRomanLesson"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activities.practise.PractiseRomanLesson"
+            android:screenOrientation="landscape" />
+
+        <service android:name=".services.BackgroundMusicService" />
+
+        <activity android:name=".activities.main.AboutActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
