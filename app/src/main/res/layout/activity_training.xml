@@ -36,13 +36,13 @@
         android:src="@drawable/roman_practise"
         android:id="@+id/roman_numerals_practise"
         android:background="@android:color/transparent"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="30dp"
         />
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_height="wrap_content"
             android:src="@drawable/plus_minus"
             android:id="@+id/plus_minus_practise"
@@ -51,8 +51,8 @@
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_height="wrap_content"
             android:src="@drawable/array_practise"
             android:id="@+id/array_practise"
@@ -61,22 +61,14 @@
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="30dp"
             android:layout_height="wrap_content"
             android:src="@drawable/less_greater_equal"
             android:id="@+id/less_greater_practise"
             android:background="@android:color/transparent"
             />
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/geometry_practise"
-            android:id="@+id/geometry_practise"
-            android:background="@android:color/transparent"
-            />
+
 
     </LinearLayout>
 

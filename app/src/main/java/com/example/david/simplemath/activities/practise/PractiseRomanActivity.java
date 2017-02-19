@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.SQLException;
 import android.graphics.Color;
@@ -55,8 +56,6 @@ public class PractiseRomanActivity extends Activity {
     private List<RomanArabianModel> romanList;
     private DatabaseHelper dbHelper = null;
 
-    public boolean correct = false;
-
     private SharedPreferences sharedPreferences = null;
     private String musicControl;
     private Intent intentMusic;
@@ -77,14 +76,12 @@ public class PractiseRomanActivity extends Activity {
         sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
         musicControl = sharedPreferences.getString("musicControl", "");
 
-
         backRoman.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             dialogBack();
             }
         });
-
 
         dbHelper = new DatabaseHelper(PractiseRomanActivity.this);
         try {
@@ -100,14 +97,11 @@ public class PractiseRomanActivity extends Activity {
 
         romanList = dbHelper.getQuestionsRomanArabian();
 
-        List<RomanArabianModel> shuffleRomanList = new ArrayList<RomanArabianModel>();
-
         Collections.shuffle(romanList);
 
         Log.e("DA LI RADI", romanList.get(1).toString());
         counter = 0;
         changeQuestion(counter);
-
     }
 
     public void dialogBack(){
@@ -158,8 +152,6 @@ public class PractiseRomanActivity extends Activity {
             });
 
             dialog.show();
-
-
         }
 
     }
@@ -285,7 +277,6 @@ public class PractiseRomanActivity extends Activity {
         answer2Button.setBackgroundResource(R.drawable.answers_roman);
         answer3Button.setBackgroundResource(R.drawable.answers_roman);
         answer4Button.setBackgroundResource(R.drawable.answers_roman);
-
     }
 
     private void setEnabledButtons(){

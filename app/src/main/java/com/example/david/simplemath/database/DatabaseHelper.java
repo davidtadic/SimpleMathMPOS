@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.david.simplemath.models.ArrayModel;
+import com.example.david.simplemath.models.PlusMinusModel;
 import com.example.david.simplemath.models.RomanArabianModel;
 
 import java.io.FileOutputStream;
@@ -24,7 +26,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper{
 
     String DB_PATH = null;
-    private static String DB_NAME = "externalDB";
+    private static String DB_NAME = "database1";
     private SQLiteDatabase myDataBase;
     private final Context myContext;
 
@@ -118,6 +120,38 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         cursor.close();
         closeDatabase();
         return romanList;
+    }
+
+    public ArrayList<ArrayModel> getQuestionsArray(){
+        ArrayModel arrayModel = null;
+        ArrayList<ArrayModel> arrayModelList = new ArrayList<>();
+        openDataBase();
+        Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryArray", null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            arrayModel = new ArrayModel(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
+            arrayModelList.add(arrayModel);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return  arrayModelList;
+    }
+
+    public ArrayList<PlusMinusModel> getQuestionsPlusMinus(){
+        PlusMinusModel plusMinusModel = null;
+        ArrayList<PlusMinusModel> plusMinusModelList = new ArrayList<>();
+        openDataBase();
+        Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryPlusMinus", null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            plusMinusModel = new PlusMinusModel(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
+            plusMinusModelList.add(plusMinusModel);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return  plusMinusModelList;
     }
 
 

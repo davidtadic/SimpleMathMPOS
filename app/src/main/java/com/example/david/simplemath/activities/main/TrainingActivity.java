@@ -7,11 +7,9 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.example.david.simplemath.R;
-import com.example.david.simplemath.activities.practise.PractiseArrayActivity;
-import com.example.david.simplemath.activities.practise.PractiseGeometryActivity;
+import com.example.david.simplemath.activities.practise.PractiseArrayLessonActivity;
 import com.example.david.simplemath.activities.practise.PractiseLessGreaterActivity;
 import com.example.david.simplemath.activities.practise.PractisePlusMinusActivity;
-import com.example.david.simplemath.activities.practise.PractiseRomanActivity;
 import com.example.david.simplemath.activities.practise.PractiseRomanLesson;
 
 public class TrainingActivity extends Activity {
@@ -21,7 +19,6 @@ public class TrainingActivity extends Activity {
     private ImageButton plusMinusButton;
     private ImageButton arrayButton;
     private ImageButton lessGreaterButton;
-    private ImageButton geometryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +30,6 @@ public class TrainingActivity extends Activity {
         plusMinusButton = (ImageButton)findViewById(R.id.plus_minus_practise);
         arrayButton = (ImageButton)findViewById(R.id.array_practise);
         lessGreaterButton = (ImageButton)findViewById(R.id.less_greater_practise);
-        geometryButton = (ImageButton)findViewById(R.id.geometry_practise);
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +60,7 @@ public class TrainingActivity extends Activity {
         arrayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(TrainingActivity.this, PractiseArrayActivity.class);
+                Intent i = new Intent(TrainingActivity.this, PractiseArrayLessonActivity.class);
                 startActivity(i);
             }
         });
@@ -77,13 +73,6 @@ public class TrainingActivity extends Activity {
             }
         });
 
-        geometryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(TrainingActivity.this, PractiseGeometryActivity.class);
-                startActivity(i);
-            }
-        });
     }
 
     @Override
