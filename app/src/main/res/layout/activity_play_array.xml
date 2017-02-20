@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_practise_array"
+    android:background="@drawable/array_backgrund"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.david.simplemath.activities.main.play.PlayArrayActivity">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/back"
+        android:id="@+id/back_array_play"
+        android:layout_alignParentEnd="true"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/question_arrayy"
+            android:id="@+id/question_array1_play"
+            android:textSize="55sp"
+            android:fontFamily="casual"
+            android:layout_marginEnd="10dp"
+            android:textColor="#000"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/question_arrayy"
+            android:id="@+id/question_array2_play"
+            android:textSize="55sp"
+            android:textColor="#000"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="casual"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/question_arrayy"
+            android:id="@+id/question_array3_play"
+            android:textSize="55sp"
+            android:textColor="#000"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="casual"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/question_arrayy"
+            android:id="@+id/question_array4_play"
+            android:textSize="55sp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="casual"
+            android:textColor="#000"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            />
+
+
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score: "
+            android:fontFamily="casual"
+            android:textSize="30sp"
+            android:layout_marginEnd="10dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:textSize="35sp"
+            android:id="@+id/score_array_play"
+            />
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:textColor="#000"
+            android:fontFamily="casual"
+            android:id="@+id/answer1_array_play"
+            android:background="@drawable/answer_array"
+            android:layout_marginEnd="30dp"
+            android:textAlignment="center"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/answer2_array_play"
+            android:layout_marginEnd="30dp"
+            android:textAlignment="center"
+            android:layout_marginStart="15dp"
+            android:textColor="#000"
+            android:background="@drawable/answer_array"
+            android:fontFamily="casual"
+            android:textSize="40sp"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="15dp"
+            android:background="@drawable/answer_array"
+            android:id="@+id/answer3_array_play"
+            android:textSize="40sp"
+            android:fontFamily="casual"
+            android:textColor="#000"
+            android:textAlignment="center"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/answer4_array_play"
+            android:fontFamily="casual"
+            android:layout_marginStart="15dp"
+            android:background="@drawable/answer_array"
+            android:textSize="40sp"
+            android:textColor="#000"
+            android:textAlignment="center"
+            />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

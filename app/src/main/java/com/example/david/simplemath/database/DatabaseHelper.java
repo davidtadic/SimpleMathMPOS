@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.david.simplemath.models.ArrayModel;
+import com.example.david.simplemath.models.HighscoreModel;
+import com.example.david.simplemath.models.LessGreaterModel;
 import com.example.david.simplemath.models.PlusMinusModel;
 import com.example.david.simplemath.models.RomanArabianModel;
 
@@ -26,7 +28,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper{
 
     String DB_PATH = null;
-    private static String DB_NAME = "database1";
+    private static String DB_NAME = "databasesimple";
     private SQLiteDatabase myDataBase;
     private final Context myContext;
 
@@ -152,6 +154,39 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         cursor.close();
         closeDatabase();
         return  plusMinusModelList;
+    }
+
+
+    public ArrayList<LessGreaterModel> getQuestionsLessGreater(){
+        LessGreaterModel lessGreaterModel = null;
+        ArrayList<LessGreaterModel> lessGreaterModelList = new ArrayList<>();
+        openDataBase();
+        Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryLessGreater", null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            lessGreaterModel = new LessGreaterModel(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+            lessGreaterModelList.add(lessGreaterModel);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return  lessGreaterModelList;
+    }
+
+    public ArrayList<HighscoreModel> getHighscores(){
+        HighscoreModel highscoreModel = null;
+        ArrayList<HighscoreModel> highscoreModelList = new ArrayList<>();
+        openDataBase();
+        Cursor cursor = myDataBase.rawQuery("SELECT * FROM Highscore ORDER BY score DESC LIMIT 3", null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            highscoreModel = new HighscoreModel(cursor.getString(1), cursor.getString(2));
+            highscoreModelList.add(highscoreModel);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return  highscoreModelList;
     }
 
 

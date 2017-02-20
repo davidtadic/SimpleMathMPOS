@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_practise_less_greater"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/records_background"
+    android:paddingBottom="10dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.david.simplemath.activities.main.play.PlayLessActivity">
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/back"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/back_less_play"
+        android:layout_alignParentEnd="true"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/less_layout"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginBottom="70dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="45sp"
+            android:fontFamily="casual"
+            android:background="@drawable/question_roman"
+            android:id="@+id/first_number_less_play"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="55dp"
+            android:background="@drawable/result_lesss"
+            android:id="@+id/result_less_play"
+            android:layout_marginEnd="55dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:textColor="#000"
+            android:background="@drawable/question_roman"
+            android:textSize="45sp"
+            android:id="@+id/second_number_less_play"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score:"
+            android:fontFamily="casual"
+            android:textSize="25sp"
+            android:textColor="#000"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:textSize="35sp"
+            android:textColor="#000"
+            android:id="@+id/score_less"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/less_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/less"
+            android:layout_marginEnd="40dp"
+            android:text="less"
+            android:textSize="0sp"
+            android:id="@+id/less_practise_play"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/equal_sign"
+            android:layout_marginEnd="40dp"
+            android:text="equal"
+            android:id="@+id/equal_practise_play"
+            android:textSize="0sp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/greater"
+            android:text="greater"
+            android:textSize="0sp"
+            android:id="@+id/greater_practise_play"
+            />
+
+
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

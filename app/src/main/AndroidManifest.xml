@@ -53,7 +53,25 @@
         <activity
             android:name=".activities.main.AboutActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".activities.practise.PractiseArrayLessonActivity"
+        <activity
+            android:name=".activities.practise.PractiseArrayLessonActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.practise.PractiseLessGreaterLessonActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.main.play.PlayPlusMinusActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.main.play.PlayArrayActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.main.play.PlayRomanActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.main.play.PlayLessActivity"
+            android:screenOrientation="landscape" />
+        <activity android:name=".activities.main.play.PlayFinishActivity"
             android:screenOrientation="landscape"/>
     </application>
 

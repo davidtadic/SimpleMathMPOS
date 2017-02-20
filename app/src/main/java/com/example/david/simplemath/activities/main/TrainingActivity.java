@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import com.example.david.simplemath.R;
 import com.example.david.simplemath.activities.practise.PractiseArrayLessonActivity;
 import com.example.david.simplemath.activities.practise.PractiseLessGreaterActivity;
+import com.example.david.simplemath.activities.practise.PractiseLessGreaterLessonActivity;
 import com.example.david.simplemath.activities.practise.PractisePlusMinusActivity;
 import com.example.david.simplemath.activities.practise.PractiseRomanLesson;
 
@@ -68,7 +69,7 @@ public class TrainingActivity extends Activity {
         lessGreaterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(TrainingActivity.this, PractiseLessGreaterActivity.class);
+                Intent i = new Intent(TrainingActivity.this, PractiseLessGreaterLessonActivity.class);
                 startActivity(i);
             }
         });

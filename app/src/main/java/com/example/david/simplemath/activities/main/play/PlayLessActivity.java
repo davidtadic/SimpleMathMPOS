@@ -1,4 +1,4 @@
-package com.example.david.simplemath.activities.practise;
+package com.example.david.simplemath.activities.main.play;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +16,13 @@ import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.david.simplemath.R;
 import com.example.david.simplemath.activities.main.MainActivity;
 import com.example.david.simplemath.activities.main.TrainingActivity;
+import com.example.david.simplemath.activities.practise.PractiseLessGreaterActivity;
 import com.example.david.simplemath.database.DatabaseHelper;
-import com.example.david.simplemath.models.ArrayModel;
 import com.example.david.simplemath.models.LessGreaterModel;
 import com.example.david.simplemath.services.BackgroundMusicService;
 
@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class PractiseLessGreaterActivity extends Activity {
+public class PlayLessActivity extends Activity {
 
     private ImageButton back;
     private Button firstNumberButton;
@@ -39,6 +39,9 @@ public class PractiseLessGreaterActivity extends Activity {
     private Button lessButton;
     private Button equalButton;
     private Button greaterButton;
+    private TextView score;
+
+    private int points;
 
     private DatabaseHelper dbHelper = null;
     private List<LessGreaterModel> lessGreaterModelList;
@@ -46,25 +49,25 @@ public class PractiseLessGreaterActivity extends Activity {
 
     Context context = this;
     private String signAnswer;
+    private SharedPreferences sharedPreferencesScore = null;
 
     private SharedPreferences sharedPreferences = null;
     private String musicControl;
     private Intent intentMusic;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_practise_less_greater);
+        setContentView(R.layout.activity_play_less);
 
-        back = (ImageButton)findViewById(R.id.back_less);
-        firstNumberButton = (Button)findViewById(R.id.first_number_less);
-        resultButton = (Button)findViewById(R.id.result_less);
-        secondNumberButton = (Button)findViewById(R.id.second_number_less);
-        lessButton = (Button)findViewById(R.id.less_practise);
-        equalButton = (Button)findViewById(R.id.equal_practise);
-        greaterButton = (Button)findViewById(R.id.greater_practise);
+        back = (ImageButton)findViewById(R.id.back_less_play);
+        firstNumberButton = (Button)findViewById(R.id.first_number_less_play);
+        resultButton = (Button)findViewById(R.id.result_less_play);
+        secondNumberButton = (Button)findViewById(R.id.second_number_less_play);
+        lessButton = (Button)findViewById(R.id.less_practise_play);
+        equalButton = (Button)findViewById(R.id.equal_practise_play);
+        greaterButton = (Button)findViewById(R.id.greater_practise_play);
+        score = (TextView)findViewById(R.id.score_less);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +79,12 @@ public class PractiseLessGreaterActivity extends Activity {
         sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
         musicControl = sharedPreferences.getString("musicControl", "");
 
-        dbHelper = new DatabaseHelper(PractiseLessGreaterActivity.this);
+        sharedPreferencesScore = getSharedPreferences("highscore", MODE_PRIVATE);
+        points = sharedPreferencesScore.getInt("score", 0);
+
+        score.setText(String.valueOf(points));
+
+        dbHelper = new DatabaseHelper(PlayLessActivity.this);
         try {
             dbHelper.createDataBase();
         } catch (IOException ioe) {
@@ -95,20 +103,19 @@ public class PractiseLessGreaterActivity extends Activity {
 
         counter = 0;
         changeQuestion(counter);
-
     }
 
     public void dialogBack(){
         final Dialog dialog = new Dialog(context);
-        dialog.setContentView(R.layout.dialog_back);
-
+        dialog.setContentView(R.layout.dialog_back_play);
+        dialog.setCancelable(false);
         ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
         ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(PractiseLessGreaterActivity.this, TrainingActivity.class);
+                Intent i = new Intent(PlayLessActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();
             }
@@ -125,21 +132,25 @@ public class PractiseLessGreaterActivity extends Activity {
     }
 
     public void changeQuestion(int counter){
-        if(counter <= 6) {
+        if(counter <= 2) {
             setEnabledButtons();
             returnBackground();
             setAnswer(lessGreaterModelList.get(counter));
             checkAnswer(lessGreaterModelList.get(counter), counter);
         }else{
             final Dialog dialog = new Dialog(context);
-            dialog.setContentView(R.layout.dialog_finish_practise);
-
+            dialog.setContentView(R.layout.dialog_finish_play);
+            dialog.setCancelable(false);
             ImageButton ok = (ImageButton)dialog.findViewById(R.id.ok_practise);
 
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(PractiseLessGreaterActivity.this, MainActivity.class);
+                    SharedPreferences.Editor editor = sharedPreferencesScore.edit();
+                    editor.putInt("score", points);
+                    editor.apply();
+
+                    Intent i = new Intent(PlayLessActivity.this, PlayFinishActivity.class);
                     startActivity(i);
                     finish();
                 }
@@ -217,6 +228,8 @@ public class PractiseLessGreaterActivity extends Activity {
                                     correctDialog(finalCounter);
                                 }
                             }, 1000);
+
+                            points += 10;
                         }else{
                             if(signAnswer.equals("less")){
                                 resultButton.setBackgroundResource(R.drawable.less_wrong);
@@ -238,7 +251,7 @@ public class PractiseLessGreaterActivity extends Activity {
                 return true;
             }
         });
-
+        score.setText(String.valueOf(points));
     }
 
     public void setAnswer(LessGreaterModel lessGreaterModel){
@@ -247,8 +260,6 @@ public class PractiseLessGreaterActivity extends Activity {
         String[] expressionArray = expression.split(" ");
         firstNumberButton.setText(expressionArray[0]);
         secondNumberButton.setText(expressionArray[1]);
-
-
     }
 
     private void returnBackground(){
@@ -275,7 +286,7 @@ public class PractiseLessGreaterActivity extends Activity {
         dialog.setCancelable(false);
 
         if(musicControl.equals("on")){
-            intentMusic = new Intent(PractiseLessGreaterActivity.this, BackgroundMusicService.class);
+            intentMusic = new Intent(PlayLessActivity.this, BackgroundMusicService.class);
             stopService(intentMusic);
         }
 
@@ -310,7 +321,7 @@ public class PractiseLessGreaterActivity extends Activity {
         setDisabledButtons();
 
         if(musicControl.equals("on")){
-            intentMusic = new Intent(PractiseLessGreaterActivity.this, BackgroundMusicService.class);
+            intentMusic = new Intent(PlayLessActivity.this, BackgroundMusicService.class);
             stopService(intentMusic);
         }
 
