@@ -177,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         HighscoreModel highscoreModel = null;
         ArrayList<HighscoreModel> highscoreModelList = new ArrayList<>();
         openDataBase();
-        Cursor cursor = myDataBase.rawQuery("SELECT * FROM Highscore ORDER BY score DESC LIMIT 3", null);
+        Cursor cursor = myDataBase.rawQuery("SELECT * FROM Highscore ORDER BY score DESC, date DESC LIMIT 3", null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
             highscoreModel = new HighscoreModel(cursor.getString(1), cursor.getString(2));
