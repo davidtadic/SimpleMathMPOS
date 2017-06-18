@@ -3,12 +3,15 @@ package com.example.david.simplemath.activities.main.play;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,23 +54,37 @@ public class PlayLessActivity extends Activity {
     private String signAnswer;
     private SharedPreferences sharedPreferencesScore = null;
 
-    private SharedPreferences sharedPreferences = null;
-    private String musicControl;
-    private Intent intentMusic;
+    BackgroundMusicService musicService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BackgroundMusicService.ServiceBinder binder = (BackgroundMusicService.ServiceBinder) service;
+            musicService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_less);
 
-        back = (ImageButton)findViewById(R.id.back_less_play);
-        firstNumberButton = (Button)findViewById(R.id.first_number_less_play);
-        resultButton = (Button)findViewById(R.id.result_less_play);
-        secondNumberButton = (Button)findViewById(R.id.second_number_less_play);
-        lessButton = (Button)findViewById(R.id.less_practise_play);
-        equalButton = (Button)findViewById(R.id.equal_practise_play);
-        greaterButton = (Button)findViewById(R.id.greater_practise_play);
-        score = (TextView)findViewById(R.id.score_less);
+        back = (ImageButton) findViewById(R.id.back_less_play);
+        firstNumberButton = (Button) findViewById(R.id.first_number_less_play);
+        resultButton = (Button) findViewById(R.id.result_less_play);
+        secondNumberButton = (Button) findViewById(R.id.second_number_less_play);
+        lessButton = (Button) findViewById(R.id.less_practise_play);
+        equalButton = (Button) findViewById(R.id.equal_practise_play);
+        greaterButton = (Button) findViewById(R.id.greater_practise_play);
+        score = (TextView) findViewById(R.id.score_less);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,9 +92,6 @@ public class PlayLessActivity extends Activity {
                 dialogBack();
             }
         });
-
-        sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
-        musicControl = sharedPreferences.getString("musicControl", "");
 
         sharedPreferencesScore = getSharedPreferences("highscore", MODE_PRIVATE);
         points = sharedPreferencesScore.getInt("score", 0);
@@ -99,18 +113,34 @@ public class PlayLessActivity extends Activity {
         lessGreaterModelList = dbHelper.getQuestionsLessGreater();
         Collections.shuffle(lessGreaterModelList);
 
-        Log.e("DA LI RADI", lessGreaterModelList.get(1).toString());
+        // Log.e("DA LI RADI", lessGreaterModelList.get(1).toString());
 
         counter = 0;
         changeQuestion(counter);
     }
 
-    public void dialogBack(){
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    public void dialogBack() {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_back_play);
         dialog.setCancelable(false);
-        ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
-        ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
+        ImageButton yes = (ImageButton) dialog.findViewById(R.id.yes);
+        ImageButton no = (ImageButton) dialog.findViewById(R.id.cancel);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,17 +161,17 @@ public class PlayLessActivity extends Activity {
         dialog.show();
     }
 
-    public void changeQuestion(int counter){
-        if(counter <= 2) {
+    public void changeQuestion(int counter) {
+        if (counter <= 2) {
             setEnabledButtons();
             returnBackground();
             setAnswer(lessGreaterModelList.get(counter));
             checkAnswer(lessGreaterModelList.get(counter), counter);
-        }else{
+        } else {
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.dialog_finish_play);
             dialog.setCancelable(false);
-            ImageButton ok = (ImageButton)dialog.findViewById(R.id.ok_practise);
+            ImageButton ok = (ImageButton) dialog.findViewById(R.id.ok_practise);
 
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +192,7 @@ public class PlayLessActivity extends Activity {
 
     }
 
-    public void checkAnswer(LessGreaterModel lessGreaterModel, int counter){
+    public void checkAnswer(LessGreaterModel lessGreaterModel, int counter) {
         final String correctAnswer = lessGreaterModel.getCorrectAnswer();
         counter++;
 
@@ -171,7 +201,7 @@ public class PlayLessActivity extends Activity {
         lessButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -181,7 +211,7 @@ public class PlayLessActivity extends Activity {
         equalButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -191,7 +221,7 @@ public class PlayLessActivity extends Activity {
         greaterButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -203,7 +233,7 @@ public class PlayLessActivity extends Activity {
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 View view = (View) event.getLocalState();
-                switch (dragEvent){
+                switch (dragEvent) {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         resultButton.setBackgroundResource(R.drawable.result_selected);
                         break;
@@ -211,15 +241,15 @@ public class PlayLessActivity extends Activity {
                         resultButton.setBackgroundResource(R.drawable.result_lesss);
                         break;
                     case DragEvent.ACTION_DROP:
-                        Button draggedButton = (Button)view.findViewById(view.getId());
+                        Button draggedButton = (Button) view.findViewById(view.getId());
                         signAnswer = draggedButton.getText().toString();
 
-                        if(signAnswer.equals(correctAnswer)){
-                            if(signAnswer.equals("less")){
+                        if (signAnswer.equals(correctAnswer)) {
+                            if (signAnswer.equals("less")) {
                                 resultButton.setBackgroundResource(R.drawable.less_correct);
-                            }else if(signAnswer.equals("equal")){
+                            } else if (signAnswer.equals("equal")) {
                                 resultButton.setBackgroundResource(R.drawable.equal_correct);
-                            }else if(signAnswer.equals("greater")){
+                            } else if (signAnswer.equals("greater")) {
                                 resultButton.setBackgroundResource(R.drawable.greater_correct);
                             }
                             new Handler().postDelayed(new Runnable() {
@@ -230,12 +260,12 @@ public class PlayLessActivity extends Activity {
                             }, 1000);
 
                             points += 10;
-                        }else{
-                            if(signAnswer.equals("less")){
+                        } else {
+                            if (signAnswer.equals("less")) {
                                 resultButton.setBackgroundResource(R.drawable.less_wrong);
-                            }else if(signAnswer.equals("equal")){
+                            } else if (signAnswer.equals("equal")) {
                                 resultButton.setBackgroundResource(R.drawable.equal_wrong);
-                            }else if(signAnswer.equals("greater")){
+                            } else if (signAnswer.equals("greater")) {
                                 resultButton.setBackgroundResource(R.drawable.greater_wrong);
                             }
                             new Handler().postDelayed(new Runnable() {
@@ -254,7 +284,7 @@ public class PlayLessActivity extends Activity {
         score.setText(String.valueOf(points));
     }
 
-    public void setAnswer(LessGreaterModel lessGreaterModel){
+    public void setAnswer(LessGreaterModel lessGreaterModel) {
 
         String expression = lessGreaterModel.getExpression();
         String[] expressionArray = expression.split(" ");
@@ -262,41 +292,40 @@ public class PlayLessActivity extends Activity {
         secondNumberButton.setText(expressionArray[1]);
     }
 
-    private void returnBackground(){
+    private void returnBackground() {
         resultButton.setBackgroundResource(R.drawable.result_lesss);
     }
 
-    private void setEnabledButtons(){
+    private void setEnabledButtons() {
         lessButton.setEnabled(true);
         equalButton.setEnabled(true);
         greaterButton.setEnabled(true);
     }
 
-    private void setDisabledButtons(){
+    private void setDisabledButtons() {
         lessButton.setEnabled(false);
         equalButton.setEnabled(false);
         greaterButton.setEnabled(false);
     }
 
-    public void correctDialog(final int counter){
+    public void correctDialog(final int counter) {
         setDisabledButtons();
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_correct);
         dialog.setCancelable(false);
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PlayLessActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
-
 
         final MediaPlayer player = MediaPlayer.create(this, R.raw.correct);
         player.setLooping(false);
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_correct);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_correct);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,8 +333,8 @@ public class PlayLessActivity extends Activity {
 
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();
@@ -317,12 +346,12 @@ public class PlayLessActivity extends Activity {
 
     }
 
-    public void wrongDialog(final int counter){
+    public void wrongDialog(final int counter) {
         setDisabledButtons();
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PlayLessActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
 
         final Dialog dialog = new Dialog(context);
@@ -334,15 +363,15 @@ public class PlayLessActivity extends Activity {
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_wrong);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_wrong);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();

@@ -1,9 +1,13 @@
 package com.example.david.simplemath.activities.main;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -18,9 +22,25 @@ public class SettingsActivity extends Activity {
     private ToggleButton music;
     private ImageButton aboutUs;
     private ImageButton backSettings;
-    private SharedPreferences sharedPreferencesMusic = null;
 
-    private String musicState;
+    BackgroundMusicService musicService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            BackgroundMusicService.ServiceBinder binder = (BackgroundMusicService.ServiceBinder) service;
+            musicService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,43 +69,47 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        sharedPreferencesMusic = getSharedPreferences("music", MODE_PRIVATE);
 
-
-        musicState = sharedPreferencesMusic.getString("musicControl", "");
-        Log.e("INFO_MUSIC", musicState);
-
-        if (musicState.equals("off")) {
-            music.setBackgroundResource(R.drawable.music_off);
-        } else if (musicState.equals("on")) {
+        if (musicService.State) {
             music.setBackgroundResource(R.drawable.music_on);
+        } else {
+            music.setBackgroundResource(R.drawable.music_off);
         }
-
-
-        final SharedPreferences.Editor editor = sharedPreferencesMusic.edit();
 
         music.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && musicState.equals("on")) {
+                if (isChecked && musicService.State) {
                     music.setBackgroundResource(R.drawable.music_off);
-                    editor.putString("musicControl", "off");
-                    editor.apply();
-                    Intent i = new Intent(SettingsActivity.this, BackgroundMusicService.class);
-                    stopService(i);
-                } else if (isChecked && musicState.equals("off")) {
+                    musicService.pauseMusic();
+                } else if (isChecked && !musicService.State) {
                     music.setBackgroundResource(R.drawable.music_on);
-                    editor.putString("musicControl", "on");
-                    editor.apply();
-                    Intent i = new Intent(SettingsActivity.this, BackgroundMusicService.class);
-                    startService(i);
+                    musicService.resumeMusic();
+                } else if (musicService.State) {
+                    music.setBackgroundResource(R.drawable.music_off);
+                    musicService.pauseMusic();
+                } else if (!musicService.State) {
+                    music.setBackgroundResource(R.drawable.music_on);
+                    musicService.resumeMusic();
                 }
-                musicState = sharedPreferencesMusic.getString("musicControl", "");
-
             }
         });
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
     @Override

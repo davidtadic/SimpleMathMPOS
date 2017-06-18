@@ -2,12 +2,15 @@ package com.example.david.simplemath.activities.main.play;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import com.example.david.simplemath.R;
 import com.example.david.simplemath.activities.main.MainActivity;
 import com.example.david.simplemath.activities.main.TrainingActivity;
+import com.example.david.simplemath.activities.practise.PractiseLessGreaterLessonActivity;
 import com.example.david.simplemath.activities.practise.PractiseRomanActivity;
 import com.example.david.simplemath.database.DatabaseHelper;
 import com.example.david.simplemath.models.RomanArabianModel;
@@ -46,11 +50,25 @@ public class PlayRomanActivity extends Activity {
     private List<RomanArabianModel> romanList;
     private DatabaseHelper dbHelper = null;
 
-    private SharedPreferences sharedPreferences = null;
     private SharedPreferences sharedPreferencesScore = null;
 
-    private String musicControl;
-    private Intent intentMusic;
+    BackgroundMusicService musicService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BackgroundMusicService.ServiceBinder binder = (BackgroundMusicService.ServiceBinder) service;
+            musicService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +76,12 @@ public class PlayRomanActivity extends Activity {
         setContentView(R.layout.activity_play_roman);
 
         backRoman = (ImageButton) findViewById(R.id.back_roman_play);
-        questionButton = (Button)findViewById(R.id.question_roman_play);
-        answer1Button = (Button)findViewById(R.id.answer1_roman_play);
-        answer2Button = (Button)findViewById(R.id.answer2_roman_play);
-        answer3Button = (Button)findViewById(R.id.answer3_roman_play);
-        answer4Button = (Button)findViewById(R.id.answer4_roman_play);
-        score = (TextView)findViewById(R.id.score_roman_play);
-
-        sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
-        musicControl = sharedPreferences.getString("musicControl", "");
+        questionButton = (Button) findViewById(R.id.question_roman_play);
+        answer1Button = (Button) findViewById(R.id.answer1_roman_play);
+        answer2Button = (Button) findViewById(R.id.answer2_roman_play);
+        answer3Button = (Button) findViewById(R.id.answer3_roman_play);
+        answer4Button = (Button) findViewById(R.id.answer4_roman_play);
+        score = (TextView) findViewById(R.id.score_roman_play);
 
         sharedPreferencesScore = getSharedPreferences("highscore", MODE_PRIVATE);
         points = sharedPreferencesScore.getInt("score", 0);
@@ -97,19 +112,35 @@ public class PlayRomanActivity extends Activity {
 
         Collections.shuffle(romanList);
 
-        Log.e("DA LI RADI", romanList.get(1).toString());
+        // Log.e("DA LI RADI", romanList.get(1).toString());
         counter = 0;
         changeQuestion(counter);
 
 
     }
 
-    public void dialogBack(){
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    public void dialogBack() {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_back_play);
         dialog.setCancelable(false);
-        ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
-        ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
+        ImageButton yes = (ImageButton) dialog.findViewById(R.id.yes);
+        ImageButton no = (ImageButton) dialog.findViewById(R.id.cancel);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,17 +161,17 @@ public class PlayRomanActivity extends Activity {
         dialog.show();
     }
 
-    public void changeQuestion(int counter){
-        if(counter <= 2) {
+    public void changeQuestion(int counter) {
+        if (counter <= 2) {
             setEnabledButtons();
             returnBackground();
             setAnswer(romanList.get(counter));
             checkAnswer(romanList.get(counter), counter);
-        }else{
+        } else {
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.dialog_less_play);
             dialog.setCancelable(false);
-            ImageButton ok = (ImageButton)dialog.findViewById(R.id.ok_practise);
+            ImageButton ok = (ImageButton) dialog.findViewById(R.id.ok_practise);
 
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -149,7 +180,8 @@ public class PlayRomanActivity extends Activity {
                     editor.putInt("score", points);
                     editor.apply();
 
-                    Intent i = new Intent(PlayRomanActivity.this, PlayLessActivity.class);
+                    Intent i = new Intent(PlayRomanActivity.this, PractiseLessGreaterLessonActivity.class);
+                    i.putExtra("PlayIntentFlag", "FromRomanToLessGreaterLesson");
                     startActivity(i);
                     finish();
                 }
@@ -160,7 +192,7 @@ public class PlayRomanActivity extends Activity {
 
     }
 
-    public void setAnswer(RomanArabianModel romanArabianModel){
+    public void setAnswer(RomanArabianModel romanArabianModel) {
         //mix answers
         List<String> answers = romanArabianModel.getMixedRomanQuestion();
 
@@ -171,7 +203,7 @@ public class PlayRomanActivity extends Activity {
         answer4Button.setText(answers.get(3));
     }
 
-    public void checkAnswer(RomanArabianModel romanArabianModel, int counter){
+    public void checkAnswer(RomanArabianModel romanArabianModel, int counter) {
         final String correctAnswer = romanArabianModel.getCorrectAnswer();
         counter++;
 
@@ -179,7 +211,7 @@ public class PlayRomanActivity extends Activity {
         answer1Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer1Button.getText().toString().equals(correctAnswer)){
+                if (answer1Button.getText().toString().equals(correctAnswer)) {
                     answer1Button.setBackgroundResource(R.drawable.answer_roman_correct);
                     new Handler().postDelayed(new Runnable() {
 
@@ -190,7 +222,7 @@ public class PlayRomanActivity extends Activity {
 
                     points += 10;
 
-                }else{
+                } else {
                     answer1Button.setBackgroundResource(R.drawable.answer_roman_wrong);
                     new Handler().postDelayed(new Runnable() {
 
@@ -205,7 +237,7 @@ public class PlayRomanActivity extends Activity {
         answer2Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer2Button.getText().toString().equals(correctAnswer)){
+                if (answer2Button.getText().toString().equals(correctAnswer)) {
                     answer2Button.setBackgroundResource(R.drawable.answer_roman_correct);
                     new Handler().postDelayed(new Runnable() {
 
@@ -215,7 +247,7 @@ public class PlayRomanActivity extends Activity {
                     }, 1000);
 
                     points += 10;
-                }else{
+                } else {
                     answer2Button.setBackgroundResource(R.drawable.answer_roman_wrong);
                     new Handler().postDelayed(new Runnable() {
 
@@ -230,7 +262,7 @@ public class PlayRomanActivity extends Activity {
         answer3Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer3Button.getText().toString().equals(correctAnswer)){
+                if (answer3Button.getText().toString().equals(correctAnswer)) {
                     answer3Button.setBackgroundResource(R.drawable.answer_roman_correct);
                     new Handler().postDelayed(new Runnable() {
 
@@ -240,7 +272,7 @@ public class PlayRomanActivity extends Activity {
                     }, 1000);
 
                     points += 10;
-                }else{
+                } else {
                     answer3Button.setBackgroundResource(R.drawable.answer_roman_wrong);
                     new Handler().postDelayed(new Runnable() {
 
@@ -255,7 +287,7 @@ public class PlayRomanActivity extends Activity {
         answer4Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer4Button.getText().toString().equals(correctAnswer)){
+                if (answer4Button.getText().toString().equals(correctAnswer)) {
                     answer4Button.setBackgroundResource(R.drawable.answer_roman_correct);
                     new Handler().postDelayed(new Runnable() {
 
@@ -265,7 +297,7 @@ public class PlayRomanActivity extends Activity {
                     }, 1000);
 
                     points += 10;
-                }else{
+                } else {
                     answer4Button.setBackgroundResource(R.drawable.answer_roman_wrong);
                     new Handler().postDelayed(new Runnable() {
 
@@ -281,46 +313,45 @@ public class PlayRomanActivity extends Activity {
 
     }
 
-    private void returnBackground(){
+    private void returnBackground() {
         answer1Button.setBackgroundResource(R.drawable.answers_roman);
         answer2Button.setBackgroundResource(R.drawable.answers_roman);
         answer3Button.setBackgroundResource(R.drawable.answers_roman);
         answer4Button.setBackgroundResource(R.drawable.answers_roman);
     }
 
-    private void setEnabledButtons(){
+    private void setEnabledButtons() {
         answer1Button.setEnabled(true);
         answer2Button.setEnabled(true);
         answer3Button.setEnabled(true);
         answer4Button.setEnabled(true);
     }
 
-    private void setDisabledButtons(){
+    private void setDisabledButtons() {
         answer1Button.setEnabled(false);
         answer2Button.setEnabled(false);
         answer3Button.setEnabled(false);
         answer4Button.setEnabled(false);
     }
 
-    public void correctDialog(final int counter){
+    public void correctDialog(final int counter) {
         setDisabledButtons();
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_correct);
         dialog.setCancelable(false);
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PlayRomanActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
-
 
         final MediaPlayer player = MediaPlayer.create(this, R.raw.correct);
         player.setLooping(false);
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_correct);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_correct);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -328,8 +359,8 @@ public class PlayRomanActivity extends Activity {
 
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();
@@ -341,12 +372,12 @@ public class PlayRomanActivity extends Activity {
 
     }
 
-    public void wrongDialog(final int counter){
+    public void wrongDialog(final int counter) {
         setDisabledButtons();
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PlayRomanActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
 
         final Dialog dialog = new Dialog(context);
@@ -358,15 +389,15 @@ public class PlayRomanActivity extends Activity {
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_wrong);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_wrong);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();

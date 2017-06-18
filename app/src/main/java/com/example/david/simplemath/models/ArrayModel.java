@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by david on 19.2.2017..
+ * Created by david
  */
 
 public class ArrayModel {
@@ -85,7 +85,7 @@ public class ArrayModel {
                 '}';
     }
 
-    public List<Integer> getMixedArrayQuestions(){
+    public List<Integer> getMixedArrayQuestions() {
         List<Integer> shuffle = new ArrayList<Integer>();
 
         shuffle.add(correctAnswer);

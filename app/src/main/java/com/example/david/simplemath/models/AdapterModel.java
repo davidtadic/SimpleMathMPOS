@@ -13,7 +13,7 @@ import com.example.david.simplemath.R;
 import java.util.ArrayList;
 
 /**
- * Created by david on 20.2.2017..
+ * Created by david
  */
 
 public class AdapterModel extends ArrayAdapter<HighscoreModel> {

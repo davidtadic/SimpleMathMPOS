@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by david on 19.2.2017..
+ * Created by david
  */
 
 public class PlusMinusModel {
@@ -85,7 +85,7 @@ public class PlusMinusModel {
                 '}';
     }
 
-    public List<Integer> getMixedPlusMinusQuestions(){
+    public List<Integer> getMixedPlusMinusQuestions() {
         List<Integer> shuffle = new ArrayList<Integer>();
 
         shuffle.add(correctAnswer);

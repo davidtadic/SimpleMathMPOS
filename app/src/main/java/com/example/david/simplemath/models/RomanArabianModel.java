@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by david on 11.2.2017..
+ * Created by david
  */
 
 public class RomanArabianModel {
@@ -85,7 +85,7 @@ public class RomanArabianModel {
                 '}';
     }
 
-    public List<String> getMixedRomanQuestion(){
+    public List<String> getMixedRomanQuestion() {
         List<String> shuffle = new ArrayList<String>();
 
         shuffle.add(correctAnswer);

@@ -26,11 +26,11 @@ public class TrainingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
-        back = (ImageButton)findViewById(R.id.back_settings);
-        romanButton = (ImageButton)findViewById(R.id.roman_numerals_practise);
-        plusMinusButton = (ImageButton)findViewById(R.id.plus_minus_practise);
-        arrayButton = (ImageButton)findViewById(R.id.array_practise);
-        lessGreaterButton = (ImageButton)findViewById(R.id.less_greater_practise);
+        back = (ImageButton) findViewById(R.id.back_settings);
+        romanButton = (ImageButton) findViewById(R.id.roman_numerals_practise);
+        plusMinusButton = (ImageButton) findViewById(R.id.plus_minus_practise);
+        arrayButton = (ImageButton) findViewById(R.id.array_practise);
+        lessGreaterButton = (ImageButton) findViewById(R.id.less_greater_practise);
 
 
         back.setOnClickListener(new View.OnClickListener() {

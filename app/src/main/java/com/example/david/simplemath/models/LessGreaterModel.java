@@ -1,7 +1,7 @@
 package com.example.david.simplemath.models;
 
 /**
- * Created by david on 20.2.2017..
+ * Created by david
  */
 
 public class LessGreaterModel {
@@ -49,5 +49,5 @@ public class LessGreaterModel {
                 '}';
     }
 
-    
+
 }

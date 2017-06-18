@@ -3,12 +3,15 @@ package com.example.david.simplemath.activities.practise;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,8 +53,24 @@ public class PractiseArrayActivity extends Activity {
     Context context = this;
 
     private SharedPreferences sharedPreferences = null;
-    private String musicControl;
-    private Intent intentMusic;
+
+    BackgroundMusicService musicService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BackgroundMusicService.ServiceBinder binder = (BackgroundMusicService.ServiceBinder) service;
+            musicService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +86,6 @@ public class PractiseArrayActivity extends Activity {
         answer2 = (Button) findViewById(R.id.answer2_array);
         answer3 = (Button) findViewById(R.id.answer3_array);
         answer4 = (Button) findViewById(R.id.answer4_array);
-
-        sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
-        musicControl = sharedPreferences.getString("musicControl", "");
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,21 +109,36 @@ public class PractiseArrayActivity extends Activity {
         arrayModelList = dbHelper.getQuestionsArray();
         Collections.shuffle(arrayModelList);
 
-        Log.e("DA LI RADI", arrayModelList.get(1).toString());
+        // Log.e("DA LI RADI", arrayModelList.get(1).toString());
 
         counter = 0;
         changeQuestion(counter);
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
 
-    public void dialogBack(){
+    public void dialogBack() {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_back);
 
-        ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
-        ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
+        ImageButton yes = (ImageButton) dialog.findViewById(R.id.yes);
+        ImageButton no = (ImageButton) dialog.findViewById(R.id.cancel);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,17 +159,17 @@ public class PractiseArrayActivity extends Activity {
         dialog.show();
     }
 
-    public void changeQuestion(int counter){
-        if(counter <= 6) {
+    public void changeQuestion(int counter) {
+        if (counter <= 6) {
             setEnabledButtons();
             returnBackground();
             setAnswer(arrayModelList.get(counter));
             checkAnswer(arrayModelList.get(counter), counter);
-        }else{
+        } else {
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.dialog_finish_practise);
 
-            ImageButton ok = (ImageButton)dialog.findViewById(R.id.ok_practise);
+            ImageButton ok = (ImageButton) dialog.findViewById(R.id.ok_practise);
 
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,7 +186,7 @@ public class PractiseArrayActivity extends Activity {
 
     }
 
-    public void checkAnswer(ArrayModel arrayModel, int counter){
+    public void checkAnswer(ArrayModel arrayModel, int counter) {
         final int correctAnswer = arrayModel.getCorrectAnswer();
         counter++;
 
@@ -164,7 +195,7 @@ public class PractiseArrayActivity extends Activity {
         answer1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -174,7 +205,7 @@ public class PractiseArrayActivity extends Activity {
         answer2.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -184,7 +215,7 @@ public class PractiseArrayActivity extends Activity {
         answer3.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -194,7 +225,7 @@ public class PractiseArrayActivity extends Activity {
         answer4.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
+                ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder dragShadowBuilder = new View.DragShadowBuilder(v);
                 v.startDrag(data, dragShadowBuilder, v, 0);
                 return true;
@@ -206,7 +237,7 @@ public class PractiseArrayActivity extends Activity {
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 View view = (View) event.getLocalState();
-                switch (dragEvent){
+                switch (dragEvent) {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         question1.setBackgroundResource(R.drawable.question_array_selected);
                         break;
@@ -214,12 +245,12 @@ public class PractiseArrayActivity extends Activity {
                         question1.setBackgroundResource(R.drawable.question_arrayy);
                         break;
                     case DragEvent.ACTION_DROP:
-                        Button draggedButton = (Button)view.findViewById(view.getId());
+                        Button draggedButton = (Button) view.findViewById(view.getId());
                         numberAnswer = Integer.valueOf(draggedButton.getText().toString());
-                        Button questionButton = (Button)v.findViewById(v.getId());
+                        Button questionButton = (Button) v.findViewById(v.getId());
                         questionButtonValue = questionButton.getText().toString();
 
-                        if(numberAnswer == correctAnswer && questionButtonValue.equals("_")){
+                        if (numberAnswer == correctAnswer && questionButtonValue.equals("_")) {
                             question1.setBackgroundResource(R.drawable.question_array_correct);
                             new Handler().postDelayed(new Runnable() {
 
@@ -227,7 +258,7 @@ public class PractiseArrayActivity extends Activity {
                                     correctDialog(finalCounter);
                                 }
                             }, 1000);
-                        }else{
+                        } else {
                             question1.setBackgroundResource(R.drawable.question_array_wrong);
                             new Handler().postDelayed(new Runnable() {
 
@@ -249,7 +280,7 @@ public class PractiseArrayActivity extends Activity {
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 View view = (View) event.getLocalState();
-                switch (dragEvent){
+                switch (dragEvent) {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         question2.setBackgroundResource(R.drawable.question_array_selected);
                         break;
@@ -257,12 +288,12 @@ public class PractiseArrayActivity extends Activity {
                         question2.setBackgroundResource(R.drawable.question_arrayy);
                         break;
                     case DragEvent.ACTION_DROP:
-                        Button draggedButton = (Button)view.findViewById(view.getId());
+                        Button draggedButton = (Button) view.findViewById(view.getId());
                         numberAnswer = Integer.valueOf(draggedButton.getText().toString());
-                        Button questionButton = (Button)v.findViewById(v.getId());
+                        Button questionButton = (Button) v.findViewById(v.getId());
                         questionButtonValue = questionButton.getText().toString();
 
-                        if(numberAnswer == correctAnswer && questionButtonValue.equals("_")){
+                        if (numberAnswer == correctAnswer && questionButtonValue.equals("_")) {
                             question2.setBackgroundResource(R.drawable.question_array_correct);
                             new Handler().postDelayed(new Runnable() {
 
@@ -270,7 +301,7 @@ public class PractiseArrayActivity extends Activity {
                                     correctDialog(finalCounter);
                                 }
                             }, 1000);
-                        }else{
+                        } else {
                             question2.setBackgroundResource(R.drawable.question_array_wrong);
                             new Handler().postDelayed(new Runnable() {
 
@@ -292,7 +323,7 @@ public class PractiseArrayActivity extends Activity {
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 View view = (View) event.getLocalState();
-                switch (dragEvent){
+                switch (dragEvent) {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         question3.setBackgroundResource(R.drawable.question_array_selected);
                         break;
@@ -300,12 +331,12 @@ public class PractiseArrayActivity extends Activity {
                         question3.setBackgroundResource(R.drawable.question_arrayy);
                         break;
                     case DragEvent.ACTION_DROP:
-                        Button draggedButton = (Button)view.findViewById(view.getId());
+                        Button draggedButton = (Button) view.findViewById(view.getId());
                         numberAnswer = Integer.valueOf(draggedButton.getText().toString());
-                        Button questionButton = (Button)v.findViewById(v.getId());
+                        Button questionButton = (Button) v.findViewById(v.getId());
                         questionButtonValue = questionButton.getText().toString();
 
-                        if(numberAnswer == correctAnswer && questionButtonValue.equals("_")){
+                        if (numberAnswer == correctAnswer && questionButtonValue.equals("_")) {
                             question3.setBackgroundResource(R.drawable.question_array_correct);
                             new Handler().postDelayed(new Runnable() {
 
@@ -313,7 +344,7 @@ public class PractiseArrayActivity extends Activity {
                                     correctDialog(finalCounter);
                                 }
                             }, 1000);
-                        }else{
+                        } else {
                             question3.setBackgroundResource(R.drawable.question_array_wrong);
                             new Handler().postDelayed(new Runnable() {
 
@@ -335,7 +366,7 @@ public class PractiseArrayActivity extends Activity {
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 View view = (View) event.getLocalState();
-                switch (dragEvent){
+                switch (dragEvent) {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         question4.setBackgroundResource(R.drawable.question_array_selected);
                         break;
@@ -343,12 +374,12 @@ public class PractiseArrayActivity extends Activity {
                         question4.setBackgroundResource(R.drawable.question_arrayy);
                         break;
                     case DragEvent.ACTION_DROP:
-                        Button draggedButton = (Button)view.findViewById(view.getId());
+                        Button draggedButton = (Button) view.findViewById(view.getId());
                         numberAnswer = Integer.valueOf(draggedButton.getText().toString());
-                        Button questionButton = (Button)v.findViewById(v.getId());
+                        Button questionButton = (Button) v.findViewById(v.getId());
                         questionButtonValue = questionButton.getText().toString();
 
-                        if(numberAnswer == correctAnswer && questionButtonValue.equals("_")){
+                        if (numberAnswer == correctAnswer && questionButtonValue.equals("_")) {
                             question4.setBackgroundResource(R.drawable.question_array_correct);
                             new Handler().postDelayed(new Runnable() {
 
@@ -356,7 +387,7 @@ public class PractiseArrayActivity extends Activity {
                                     correctDialog(finalCounter);
                                 }
                             }, 1000);
-                        }else{
+                        } else {
                             question4.setBackgroundResource(R.drawable.question_array_wrong);
                             new Handler().postDelayed(new Runnable() {
 
@@ -374,10 +405,9 @@ public class PractiseArrayActivity extends Activity {
         });
 
 
-
     }
 
-    public void setAnswer(ArrayModel arrayModel){
+    public void setAnswer(ArrayModel arrayModel) {
         List<Integer> answers = arrayModel.getMixedArrayQuestions();
 
         String expression = arrayModel.getExpression();
@@ -394,7 +424,7 @@ public class PractiseArrayActivity extends Activity {
 
     }
 
-    private void returnBackground(){
+    private void returnBackground() {
         question1.setBackgroundResource(R.drawable.question_arrayy);
         question2.setBackgroundResource(R.drawable.question_arrayy);
         question3.setBackgroundResource(R.drawable.question_arrayy);
@@ -402,39 +432,38 @@ public class PractiseArrayActivity extends Activity {
 
     }
 
-    private void setEnabledButtons(){
+    private void setEnabledButtons() {
         answer1.setEnabled(true);
         answer2.setEnabled(true);
         answer3.setEnabled(true);
         answer4.setEnabled(true);
     }
 
-    private void setDisabledButtons(){
+    private void setDisabledButtons() {
         answer1.setEnabled(false);
         answer2.setEnabled(false);
         answer3.setEnabled(false);
         answer4.setEnabled(false);
     }
 
-    public void correctDialog(final int counter){
+    public void correctDialog(final int counter) {
         setDisabledButtons();
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_correct);
         dialog.setCancelable(false);
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PractiseArrayActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
-
 
         final MediaPlayer player = MediaPlayer.create(this, R.raw.correct);
         player.setLooping(false);
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_correct);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_correct);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -442,8 +471,8 @@ public class PractiseArrayActivity extends Activity {
 
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();
@@ -455,12 +484,12 @@ public class PractiseArrayActivity extends Activity {
 
     }
 
-    public void wrongDialog(final int counter){
+    public void wrongDialog(final int counter) {
         setDisabledButtons();
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PractiseArrayActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
 
         final Dialog dialog = new Dialog(context);
@@ -472,15 +501,15 @@ public class PractiseArrayActivity extends Activity {
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_wrong);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_wrong);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();

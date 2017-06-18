@@ -31,7 +31,7 @@
         android:textAlignment="center"
         android:padding="10dp"
         android:layout_below="@+id/aboutText"
-        android:text="This game was specially made from two students of Informatics to help young kids to learn on interesting way the basics of Mathematics.\n Good Luck!"
+        android:text="This game was specially made to help young kids to learn on interesting way the basics of Mathematics.\n Good Luck!"
         android:textSize="25sp"
         android:fontFamily="casual"
         />

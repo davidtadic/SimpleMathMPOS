@@ -2,12 +2,15 @@ package com.example.david.simplemath.activities.practise;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,8 +52,23 @@ public class PractisePlusMinusActivity extends Activity {
     private int counter;
 
     private SharedPreferences sharedPreferences = null;
-    private String musicControl;
-    private Intent intentMusic;
+    BackgroundMusicService musicService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BackgroundMusicService.ServiceBinder binder = (BackgroundMusicService.ServiceBinder) service;
+            musicService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +76,15 @@ public class PractisePlusMinusActivity extends Activity {
         setContentView(R.layout.activity_practise_plus_minus);
 
         back = (ImageButton) findViewById(R.id.back_plus_minus);
-        firstNumberButton = (Button)findViewById(R.id.question_plus_minus1);
-        plusOrMinusButton = (Button)findViewById(R.id.question_plus_minus2);
-        secondNumberButton = (Button)findViewById(R.id.question_plus_minus3);
-        equalButton = (Button)findViewById(R.id.question_plus_minus4);
-        resultButton = (Button)findViewById(R.id.question_plus_minus5);
-        answer1Button = (Button)findViewById(R.id.answer1_plus_minus);
-        answer2Button = (Button)findViewById(R.id.answer2_plus_minus);
-        answer3Button = (Button)findViewById(R.id.answer3_plus_minus);
-        answer4Button = (Button)findViewById(R.id.answer4_plus_minus);
-
-        sharedPreferences = getSharedPreferences("music", MODE_PRIVATE);
-        musicControl = sharedPreferences.getString("musicControl", "");
+        firstNumberButton = (Button) findViewById(R.id.question_plus_minus1);
+        plusOrMinusButton = (Button) findViewById(R.id.question_plus_minus2);
+        secondNumberButton = (Button) findViewById(R.id.question_plus_minus3);
+        equalButton = (Button) findViewById(R.id.question_plus_minus4);
+        resultButton = (Button) findViewById(R.id.question_plus_minus5);
+        answer1Button = (Button) findViewById(R.id.answer1_plus_minus);
+        answer2Button = (Button) findViewById(R.id.answer2_plus_minus);
+        answer3Button = (Button) findViewById(R.id.answer3_plus_minus);
+        answer4Button = (Button) findViewById(R.id.answer4_plus_minus);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,24 +108,40 @@ public class PractisePlusMinusActivity extends Activity {
         plusMinusModelList = dbHelper.getQuestionsPlusMinus();
         Collections.shuffle(plusMinusModelList);
 
-        Log.e("DA LI RADI", plusMinusModelList.get(1).toString());
+        // Log.e("DA LI RADI", plusMinusModelList.get(1).toString());
 
         counter = 0;
         changeQuestion(counter);
 
     }
 
-    public void changeQuestion(int counter){
-        if(counter <= 6) {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    public void changeQuestion(int counter) {
+        if (counter <= 6) {
             setEnabledButtons();
             returnBackground();
             setAnswer(plusMinusModelList.get(counter));
             checkAnswer(plusMinusModelList.get(counter), counter);
-        }else{
+        } else {
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.dialog_finish_practise);
 
-            ImageButton ok = (ImageButton)dialog.findViewById(R.id.ok_practise);
+            ImageButton ok = (ImageButton) dialog.findViewById(R.id.ok_practise);
 
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -128,16 +159,16 @@ public class PractisePlusMinusActivity extends Activity {
 
     }
 
-    public void setAnswer(PlusMinusModel plusMinusModel){
+    public void setAnswer(PlusMinusModel plusMinusModel) {
         //mix answers
         List<Integer> answers = plusMinusModel.getMixedPlusMinusQuestions();
         String expression = plusMinusModel.getExpression();
         String[] expressionArray = expression.split(" ");
 
         firstNumberButton.setText(expressionArray[0]);
-        if(expressionArray[1].equals("+")){
+        if (expressionArray[1].equals("+")) {
             plusOrMinusButton.setBackgroundResource(R.drawable.pluss);
-        }else if(expressionArray[1].equals("-")){
+        } else if (expressionArray[1].equals("-")) {
             plusOrMinusButton.setBackgroundResource(R.drawable.minuss);
         }
         secondNumberButton.setText(expressionArray[2]);
@@ -148,7 +179,7 @@ public class PractisePlusMinusActivity extends Activity {
         answer4Button.setText(String.valueOf(answers.get(3)));
     }
 
-    public void checkAnswer(PlusMinusModel plusMinusModel, int counter){
+    public void checkAnswer(PlusMinusModel plusMinusModel, int counter) {
         final int correctAnswer = plusMinusModel.getCorrectAnswer();
         counter++;
 
@@ -157,7 +188,7 @@ public class PractisePlusMinusActivity extends Activity {
         answer1Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer1Button.getText().toString().equals(String.valueOf(correctAnswer))){
+                if (answer1Button.getText().toString().equals(String.valueOf(correctAnswer))) {
                     answer1Button.setBackgroundResource(R.drawable.plus_minus_answer_correctt);
                     new Handler().postDelayed(new Runnable() {
 
@@ -166,7 +197,7 @@ public class PractisePlusMinusActivity extends Activity {
                         }
                     }, 1000);
 
-                }else{
+                } else {
                     answer1Button.setBackgroundResource(R.drawable.plus_minus_answer_wrongg);
                     new Handler().postDelayed(new Runnable() {
 
@@ -181,7 +212,7 @@ public class PractisePlusMinusActivity extends Activity {
         answer2Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer2Button.getText().toString().equals(String.valueOf(correctAnswer))){
+                if (answer2Button.getText().toString().equals(String.valueOf(correctAnswer))) {
                     answer2Button.setBackgroundResource(R.drawable.plus_minus_answer_correctt);
                     new Handler().postDelayed(new Runnable() {
 
@@ -190,7 +221,7 @@ public class PractisePlusMinusActivity extends Activity {
                         }
                     }, 1000);
 
-                }else{
+                } else {
                     answer2Button.setBackgroundResource(R.drawable.plus_minus_answer_wrongg);
                     new Handler().postDelayed(new Runnable() {
 
@@ -205,7 +236,7 @@ public class PractisePlusMinusActivity extends Activity {
         answer3Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer3Button.getText().toString().equals(String.valueOf(correctAnswer))){
+                if (answer3Button.getText().toString().equals(String.valueOf(correctAnswer))) {
                     answer3Button.setBackgroundResource(R.drawable.plus_minus_answer_correctt);
                     new Handler().postDelayed(new Runnable() {
 
@@ -214,7 +245,7 @@ public class PractisePlusMinusActivity extends Activity {
                         }
                     }, 1000);
 
-                }else{
+                } else {
                     answer3Button.setBackgroundResource(R.drawable.plus_minus_answer_wrongg);
                     new Handler().postDelayed(new Runnable() {
 
@@ -229,7 +260,7 @@ public class PractisePlusMinusActivity extends Activity {
         answer4Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(answer4Button.getText().toString().equals(String.valueOf(correctAnswer))){
+                if (answer4Button.getText().toString().equals(String.valueOf(correctAnswer))) {
                     answer4Button.setBackgroundResource(R.drawable.plus_minus_answer_correctt);
                     new Handler().postDelayed(new Runnable() {
 
@@ -238,7 +269,7 @@ public class PractisePlusMinusActivity extends Activity {
                         }
                     }, 1000);
 
-                }else{
+                } else {
                     answer4Button.setBackgroundResource(R.drawable.plus_minus_answer_wrongg);
                     new Handler().postDelayed(new Runnable() {
 
@@ -251,7 +282,7 @@ public class PractisePlusMinusActivity extends Activity {
         });
     }
 
-    private void returnBackground(){
+    private void returnBackground() {
         answer1Button.setBackgroundResource(R.drawable.plus_minus_answerr);
         answer2Button.setBackgroundResource(R.drawable.plus_minus_answerr);
         answer3Button.setBackgroundResource(R.drawable.plus_minus_answerr);
@@ -259,39 +290,38 @@ public class PractisePlusMinusActivity extends Activity {
 
     }
 
-    private void setEnabledButtons(){
+    private void setEnabledButtons() {
         answer1Button.setEnabled(true);
         answer2Button.setEnabled(true);
         answer3Button.setEnabled(true);
         answer4Button.setEnabled(true);
     }
 
-    private void setDisabledButtons(){
+    private void setDisabledButtons() {
         answer1Button.setEnabled(false);
         answer2Button.setEnabled(false);
         answer3Button.setEnabled(false);
         answer4Button.setEnabled(false);
     }
 
-    public void correctDialog(final int counter){
+    public void correctDialog(final int counter) {
         setDisabledButtons();
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_correct);
         dialog.setCancelable(false);
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PractisePlusMinusActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
-
 
         final MediaPlayer player = MediaPlayer.create(this, R.raw.correct);
         player.setLooping(false);
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_correct);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_correct);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,8 +329,8 @@ public class PractisePlusMinusActivity extends Activity {
 
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();
@@ -312,12 +342,12 @@ public class PractisePlusMinusActivity extends Activity {
 
     }
 
-    public void wrongDialog(final int counter){
+    public void wrongDialog(final int counter) {
         setDisabledButtons();
 
-        if(musicControl.equals("on")){
-            intentMusic = new Intent(PractisePlusMinusActivity.this, BackgroundMusicService.class);
-            stopService(intentMusic);
+        if (musicService.State) {
+            musicService.pauseMusic();
+            musicService.State = true;
         }
 
         final Dialog dialog = new Dialog(context);
@@ -329,15 +359,15 @@ public class PractisePlusMinusActivity extends Activity {
         player.setVolume(100, 100);
         player.start();
 
-        ImageButton next = (ImageButton)dialog.findViewById(R.id.forward_wrong);
+        ImageButton next = (ImageButton) dialog.findViewById(R.id.forward_wrong);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 player.stop();
                 player.release();
-                if(musicControl.equals("on")){
-                    startService(intentMusic);
+                if (musicService.State) {
+                    musicService.resumeMusic();
                 }
                 changeQuestion(counter);
                 dialog.dismiss();
@@ -348,15 +378,12 @@ public class PractisePlusMinusActivity extends Activity {
     }
 
 
-
-
-
-    public void dialogBack(){
+    public void dialogBack() {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_back);
 
-        ImageButton yes = (ImageButton)dialog.findViewById(R.id.yes);
-        ImageButton no = (ImageButton)dialog.findViewById(R.id.cancel);
+        ImageButton yes = (ImageButton) dialog.findViewById(R.id.yes);
+        ImageButton no = (ImageButton) dialog.findViewById(R.id.cancel);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -37,8 +37,8 @@ public class RecordsActivity extends Activity {
         ArrayList<HighscoreModel> highscoreList = new ArrayList<>();
         AdapterModel adapterModel = new AdapterModel(this, highscoreList);
 
-        backRecords = (ImageButton)findViewById(R.id.back_records);
-        listView = (ListView)findViewById(R.id.list_view);
+        backRecords = (ImageButton) findViewById(R.id.back_records);
+        listView = (ListView) findViewById(R.id.list_view);
 
         listView.setAdapter(adapterModel);
         registerForContextMenu(listView);
@@ -67,7 +67,6 @@ public class RecordsActivity extends Activity {
         }
 
         highscoreList = dbHelper.getHighscores();
-        Log.e("DA LI RADI", highscoreList.get(1).toString());
 
         adapterModel.addAll(highscoreList);
 

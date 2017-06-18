@@ -27,14 +27,13 @@ public class PlayActivity extends Activity {
     private ImageButton forward;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        back = (ImageButton)findViewById(R.id.back_play_lesson);
-        forward = (ImageButton)findViewById(R.id.forward_play_lesson);
+        back = (ImageButton) findViewById(R.id.back_play_lesson);
+        forward = (ImageButton) findViewById(R.id.forward_play_lesson);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,5 +56,10 @@ public class PlayActivity extends Activity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PlayActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

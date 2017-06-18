@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by david on 11.2.2017..
+ * Created by david
  */
 
-public class DatabaseHelper extends SQLiteOpenHelper{
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     String DB_PATH = null;
-    private static String DB_NAME = "databasesimple";
+    private static String DB_NAME = "databaseSimpleMath";
     private SQLiteDatabase myDataBase;
     private final Context myContext;
 
@@ -87,7 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public void closeDatabase() {
-        if(myDataBase!=null) {
+        if (myDataBase != null) {
             myDataBase.close();
         }
     }
@@ -124,69 +124,69 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return romanList;
     }
 
-    public ArrayList<ArrayModel> getQuestionsArray(){
+    public ArrayList<ArrayModel> getQuestionsArray() {
         ArrayModel arrayModel = null;
         ArrayList<ArrayModel> arrayModelList = new ArrayList<>();
         openDataBase();
         Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryArray", null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
+        while (!cursor.isAfterLast()) {
             arrayModel = new ArrayModel(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
             arrayModelList.add(arrayModel);
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
-        return  arrayModelList;
+        return arrayModelList;
     }
 
-    public ArrayList<PlusMinusModel> getQuestionsPlusMinus(){
+    public ArrayList<PlusMinusModel> getQuestionsPlusMinus() {
         PlusMinusModel plusMinusModel = null;
         ArrayList<PlusMinusModel> plusMinusModelList = new ArrayList<>();
         openDataBase();
         Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryPlusMinus", null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
+        while (!cursor.isAfterLast()) {
             plusMinusModel = new PlusMinusModel(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
             plusMinusModelList.add(plusMinusModel);
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
-        return  plusMinusModelList;
+        return plusMinusModelList;
     }
 
 
-    public ArrayList<LessGreaterModel> getQuestionsLessGreater(){
+    public ArrayList<LessGreaterModel> getQuestionsLessGreater() {
         LessGreaterModel lessGreaterModel = null;
         ArrayList<LessGreaterModel> lessGreaterModelList = new ArrayList<>();
         openDataBase();
         Cursor cursor = myDataBase.rawQuery("SELECT * FROM CategoryLessGreater", null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
+        while (!cursor.isAfterLast()) {
             lessGreaterModel = new LessGreaterModel(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
             lessGreaterModelList.add(lessGreaterModel);
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
-        return  lessGreaterModelList;
+        return lessGreaterModelList;
     }
 
-    public ArrayList<HighscoreModel> getHighscores(){
+    public ArrayList<HighscoreModel> getHighscores() {
         HighscoreModel highscoreModel = null;
         ArrayList<HighscoreModel> highscoreModelList = new ArrayList<>();
         openDataBase();
         Cursor cursor = myDataBase.rawQuery("SELECT * FROM Highscore ORDER BY score DESC, date DESC LIMIT 3", null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
+        while (!cursor.isAfterLast()) {
             highscoreModel = new HighscoreModel(cursor.getString(1), cursor.getString(2));
             highscoreModelList.add(highscoreModel);
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
-        return  highscoreModelList;
+        return highscoreModelList;
     }
 
 

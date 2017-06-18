@@ -39,8 +39,8 @@ public class PlayFinishActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_finish);
 
-        score = (TextView)findViewById(R.id.score_finish);
-        forward = (ImageButton)findViewById(R.id.forward_main_menu);
+        score = (TextView) findViewById(R.id.score_finish);
+        forward = (ImageButton) findViewById(R.id.forward_main_menu);
 
         final String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
@@ -81,9 +81,9 @@ public class PlayFinishActivity extends Activity {
 
             long result = db.insert("Highscore", null, contentValues);
 
-            if(result == -1){
+            if (result == -1) {
                 return false;
-            }else{
+            } else {
                 return true;
             }
         }

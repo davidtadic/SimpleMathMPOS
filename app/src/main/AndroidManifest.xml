@@ -48,7 +48,8 @@
             android:name=".activities.practise.PractiseRomanLesson"
             android:screenOrientation="landscape" />
 
-        <service android:name=".services.BackgroundMusicService" />
+        <service android:name=".services.BackgroundMusicService"
+            android:enabled="true"/>
 
         <activity
             android:name=".activities.main.AboutActivity"
